@@ -1,0 +1,75 @@
+
+const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const jarvis = recognition ? new recognition() : null;
+
+if (jarvis) {
+  jarvis.lang = "hi-IN";
+  jarvis.continuous = false;
+  jarvis.interimResults = false;
+}
+
+function speakText(text) {
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "hi-IN";
+  speech.rate = 1;
+  speech.pitch = 1;
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(speech);
+}
+
+function startListening() {
+  if (!jarvis) {
+    speakText("आपका ब्राउज़र आवाज़ सुनने की सुविधा सपोर्ट नहीं करता।");
+    return;
+  }
+
+  jarvis.start();
+}
+
+if (jarvis) {
+  jarvis.onresult = function(event) {
+    const command = event.results[0][0].transcript.toLowerCase();
+
+    console.log("आपने कहा:", command);
+
+    handleCommand(command);
+  };
+
+  jarvis.onerror = function(event) {
+    console.log("Voice error:", event.error);
+  };
+}
+
+function handleCommand(command) {
+  if (command.includes("नमस्ते")) {
+    speakText("नमस्ते सर, मैं जार्विस हूँ।");
+  }
+
+  else if (command.includes("तुम्हारा नाम")) {
+    speakText("मेरा नाम जार्विस एन है।");
+  }
+
+  else if (command.includes("समय")) {
+    const time = new Date().toLocaleTimeString("hi-IN");
+    speakText("अभी समय है " + time);
+  }
+
+  else if (command.includes("तारीख")) {
+    const date = new Date().toLocaleDateString("hi-IN");
+    speakText("आज की तारीख है " + date);
+  }
+
+  else if (command.includes("बंद")) {
+    speakText("ठीक है सर।");
+  }
+
+  else {
+    speakText("माफ कीजिए सर, मैं आपका आदेश समझ नहीं पाया।");
+  }
+}
+
+console.log("JARVIS N तैयार है।");
+
+speakText("नमस्ते सर, जार्विस एन तैयार है।");
